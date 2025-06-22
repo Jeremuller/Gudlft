@@ -16,4 +16,10 @@ def test_show_summary_with_valid_email(client):
     assert b"<h2>Welcome, john@simplylift.co" in response.data
 
 
+def test_show_summary_with_invalid_email(client):
+    response = client.post("/showSummary", data={"email": "invalid@example.com"})
+    assert response.status_code == 200
+    assert b"index.html" in response.data
+    assert b"Please enter your secretary email to continue" in response.data
+
 
