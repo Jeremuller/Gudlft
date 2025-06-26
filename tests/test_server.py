@@ -23,3 +23,10 @@ def test_show_summary_with_invalid_email(client):
     print(data)
     assert response.status_code == 200
     assert "The email you entered isn&#39;t found, please try again." in data
+
+
+def test_show_summary_with_missing_email(client):
+    response = client.post("/showSummary", data={})
+    data = response.data.decode()
+    assert response.status_code == 200
+    assert "Form isn&#39;t complete, please enter an email address." in data
