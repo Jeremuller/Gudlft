@@ -20,6 +20,6 @@ def test_show_summary_with_valid_email(client):
 def test_show_summary_with_invalid_email(client):
     response = client.post("/showSummary", data={"email": "invalid@example.com"})
     data = response.data.decode()
+    print(data)
     assert response.status_code == 200
-    assert "index.html" in data
-    assert "The email you entered isn't found, please try again." in data
+    assert "The email you entered isn&#39;t found, please try again." in data

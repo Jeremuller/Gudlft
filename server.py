@@ -33,7 +33,7 @@ def show_summary():
         club = next((club for club in clubs if club["email"] == email), None)
 
         if club is None:
-            flash("The email you entered isn't found, please try again.")
+            flash("The email you entered isn\'t found, please try again.")
             return render_template("index.html")
 
         return render_template("welcome.html", club=club, competitions=competitions)
@@ -52,7 +52,7 @@ def book(competition, club):
             "booking.html", club=found_club, competition=found_competition
         )
     else:
-        flash("Something went wrong-please try again")
+        flash("Something went wrong, please try again")
         return render_template("welcome.html", club=club, competitions=competitions)
 
 
