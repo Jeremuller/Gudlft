@@ -5,21 +5,21 @@ from server import clubs, app
 
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
 
 
 def test_show_summary_with_valid_email(client):
     response = client.post("/showSummary", data={"email": "john@simplylift.co"})
+    data = response.data.decode()
     assert response.status_code == 200
-    assert b"<h2>Welcome, john@simplylift.co" in response.data
+    assert "Welcome, john@simplylift.co" in data
 
 
 def test_show_summary_with_invalid_email(client):
     response = client.post("/showSummary", data={"email": "invalid@example.com"})
+    data = response.data.decode()
     assert response.status_code == 200
-    assert b"index.html" in response.data
-    assert b"Please enter your secretary email to continue" in response.data
-
-
+    assert "index.html" in data
+    assert "The email you entered isn't found, please try again." in data
