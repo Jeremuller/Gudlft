@@ -70,13 +70,28 @@ def book(competition, club):
 
 @app.route("/purchasePlaces", methods=["POST"])
 def purchase_places():
+    """
+    Handle the purchase of competition places by a club.
+
+    Validates sufficient club points and competition places before processing.
+    Updates competition places and deducts points from the club upon successful purchase.
+
+    Returns:
+        Rendered welcome page with updated club and competition details.
+    """
+
+    # Retrieve competition, club details and number of places required from the form data
     competition = [c for c in competitions if c["name"] == request.form["competition"]][
         0
     ]
     club = [c for c in clubs if c["name"] == request.form["club"]][0]
     places_required = int(request.form["places"])
+
+    # Update the number of places and points
     competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - places_required
     club["points"] = int(club["points"]) - int(request.form["places"])
+
+    # Display a confirmation message, and render welcome template
     flash("Great-booking complete!")
     return render_template("welcome.html", club=club, competitions=competitions)
 
