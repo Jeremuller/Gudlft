@@ -15,12 +15,19 @@ def client():
 
 
 def test_booking_places_update_club_points(client):
+    """
+    Test the purchase of places and verify the club points are correctly updated.
+    """
 
+    # Define competition and club for the test
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
-    initial_points = int(next(c for c in clubs if c["name"] == club_name)["points"])
 
+    # Retrieve initial points of the club and define the number of places to buy
+    initial_points = int(next(c for c in clubs if c["name"] == club_name)["points"])
     places_to_buy = 3
+
+    # Simulate a POST request to purchase places
     response = client.post(
         "/purchasePlaces",
         data={
@@ -30,7 +37,11 @@ def test_booking_places_update_club_points(client):
         },
     )
 
+    # Verify the response status code is successful
     assert response.status_code == 200
 
+    # Retrieve the updated club details
     updated_club = next(c for c in clubs if c["name"] == club_name)
+
+    #  Verify the club points are correctly updated after purchase
     assert int(updated_club["points"]) == initial_points - places_to_buy
