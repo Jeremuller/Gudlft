@@ -34,4 +34,3 @@ def test_booking_places_update_club_points(client):
 
     updated_club = next(c for c in clubs if c["name"] == club_name)
     assert int(updated_club["points"]) == initial_points - places_to_buy
-
