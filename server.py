@@ -28,17 +28,29 @@ def index():
 
 @app.route("/showSummary", methods=["POST"])
 def show_summary():
+    """
+    Handle email form submission and display the appropriate page.
+
+    Checks if the provided email is associated with a registered club.
+    Renders a welcome page for valid emails or an error message for invalid or missing emails.
+    """
     try:
+        # Get the email from the form data
         email = request.form["email"]
+
+        # Find a club with the provided email
         club = next((club for club in clubs if club["email"] == email), None)
 
+        # If no club is found, show an error message and return to the index page
         if club is None:
-            flash("The email you entered isn\'t found, please try again.")
+            flash("The email you entered isn't found, please try again.")
             return render_template("index.html")
 
+        # If a club is found, show the welcome page with club and competition details
         return render_template("welcome.html", club=club, competitions=competitions)
 
     except KeyError:
+        # If the email field is missing, show an error message and return to the index page
         flash("Form isn't complete, please enter an email address.")
         return render_template("index.html")
 
