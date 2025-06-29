@@ -108,4 +108,30 @@ def test_successful_purchase_with_enough_points(client):
     assert int(updated_club["points"]) == 5
 
 
+def test_successful_purchase_without_enough_points(client):
+    """
+    Test that a purchase is successful when the club has enough points.
+    """
+    # Define competition and club for the test
+    competition_name = "Spring Festival"
+    club_name = "Simply Lift"
+    club = next(c for c in clubs if c["name"] == club_name)
 
+    # Set initial points to a low value
+    club["points"] = "3"
+
+    # Attempt to purchase
+    places_to_buy = 5
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition_name,
+            "club": club_name,
+            "places": str(places_to_buy),
+        },
+    )
+
+    assert response.status_code == 200
+    updated_club = next(c for c in clubs if c["name"] == club_name)
+    # Points should be deducted
+    assert int(updated_club["points"]) == 3
