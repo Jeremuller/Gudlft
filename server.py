@@ -92,6 +92,11 @@ def purchase_places():
         flash("Not enough points to book the required number of places.")
         return render_template("welcome.html", club=club, competitions=competitions)
 
+    # Check if there are enough places available in the competition
+    elif int(competition["numberOfPlaces"]) < places_required:
+        flash("Not enough places available in the competition.")
+        return render_template("welcome.html", club=club, competitions=competitions)
+
     else:
         # Update the number of places and points
         competition["numberOfPlaces"] = (
