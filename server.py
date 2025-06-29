@@ -94,7 +94,9 @@ def purchase_places():
 
     else:
         # Update the number of places and points
-        competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - places_required
+        competition["numberOfPlaces"] = (
+            int(competition["numberOfPlaces"]) - places_required
+        )
         club["points"] = int(club["points"]) - int(request.form["places"])
 
         # Display a confirmation message, and render welcome template
