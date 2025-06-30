@@ -67,3 +67,45 @@ def test_track_places_booked_by_clubs(client):
         get_booked_places(club_name, competition_name)
         == places_to_buy + additional_places_to_buy
     )
+
+
+def test_successful_purchase_within_12_places_limit(client):
+    """
+    Test that a club can successfully purchase places as long as the total does not exceed 12.
+    """
+    competition_name = "Spring Festival"
+    club_name = "Simply Lift"
+
+    # Initial setup
+    club = next(c for c in clubs if c["name"] == club_name)
+    # Sufficient points for testing
+    club["points"] = "50"
+
+    # First booking of 10 places
+    places_to_buy = 10
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition_name,
+            "club": club_name,
+            "places": str(places_to_buy),
+        },
+    )
+    assert response.status_code == 200
+    assert get_booked_places(club_name, competition_name) == places_to_buy
+
+    # Second booking of 2 places
+    additional_places_to_buy = 2
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition_name,
+            "club": club_name,
+            "places": str(additional_places_to_buy),
+        },
+    )
+    assert response.status_code == 200
+    assert (
+        get_booked_places(club_name, competition_name)
+        == places_to_buy + additional_places_to_buy
+    )
