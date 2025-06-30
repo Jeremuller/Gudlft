@@ -73,8 +73,11 @@ def test_successful_purchase_within_12_places_limit(client):
     """
     Test that a club can successfully purchase places as long as the total does not exceed 12.
     """
+
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
+
+    booked_places[(club_name, competition_name)] = 0
 
     # Initial setup
     club = next(c for c in clubs if c["name"] == club_name)
@@ -118,6 +121,8 @@ def test_purchase_exceeding_12_places_limit(client):
     """
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
+
+    booked_places[(club_name, competition_name)] = 0
 
     # Initial setup
     club = next(c for c in clubs if c["name"] == club_name)

@@ -84,7 +84,9 @@ def purchase_places():
     """
     Handle the purchase of competition places by a club.
 
-    Validates sufficient club points and competition places before processing.
+    Validates sufficient club points and competition places before processing,
+    and the 12 limit places before processing.
+
     Updates competition places and deducts points from the club upon successful purchase.
     Keep the booking_tracking dictionary up to date
 
@@ -107,6 +109,12 @@ def purchase_places():
     # Check if there are enough places available in the competition
     elif int(competition["numberOfPlaces"]) < places_required:
         flash("Not enough places available in the competition.")
+        return render_template("welcome.html", club=club, competitions=competitions)
+
+    # Check if the club has already booked 12 or more places for this competition
+    key = (club["name"], competition["name"])
+    if booked_places.get(key, 0) + places_required >= 12:
+        flash("A club cannot book more than 12 places in total for a competition.")
         return render_template("welcome.html", club=club, competitions=competitions)
 
     else:
