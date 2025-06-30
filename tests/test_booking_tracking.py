@@ -1,6 +1,6 @@
 import pytest
 
-from server import clubs, app, competitions
+from server import clubs, app, competitions, get_booked_places, booked_places
 
 
 @pytest.fixture
