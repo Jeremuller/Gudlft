@@ -86,6 +86,7 @@ def purchase_places():
 
     Validates sufficient club points and competition places before processing.
     Updates competition places and deducts points from the club upon successful purchase.
+    Keep the booking_tracking dictionary up to date
 
     Returns:
         Rendered welcome page with updated club and competition details.
@@ -114,6 +115,10 @@ def purchase_places():
             int(competition["numberOfPlaces"]) - places_required
         )
         club["points"] = int(club["points"]) - int(request.form["places"])
+
+        # Update the booked places tracking
+        key = (club["name"], competition["name"])
+        booked_places[key] = booked_places.get(key, 0) + places_required
 
         # Display a confirmation message, and render welcome template
         flash("Great-booking complete!")
