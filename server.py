@@ -21,6 +21,17 @@ competitions = load_competitions()
 clubs = load_clubs()
 
 
+# Dictionary to keep track of booked places
+booked_places = {}
+
+
+def get_booked_places(club_name, competition_name):
+    """
+    Retrieve the number of places booked by a club for a competition.
+    """
+    return booked_places.get((club_name, competition_name), 0)
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
