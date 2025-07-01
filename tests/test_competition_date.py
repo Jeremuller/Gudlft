@@ -56,7 +56,7 @@ def test_added_past_competition_not_displayed(client):
     past_competition = {
         "name": "Past Competition",
         "date": "2020-01-01 10:00:00",
-        "numberOfPlaces": "10"
+        "numberOfPlaces": "10",
     }
 
     # Add the past competition to the competitions list
@@ -69,6 +69,7 @@ def test_added_past_competition_not_displayed(client):
     # Check that the response does not contain the past competition name
     assert b"Past Competition" not in response.data
 
+
 def test_added_future_competition_is_displayed(client):
     """
     Test that a future competition is displayed.
@@ -77,7 +78,7 @@ def test_added_future_competition_is_displayed(client):
     future_competition = {
         "name": "Future Competition",
         "date": "2027-01-01 10:00:00",
-        "numberOfPlaces": "10"
+        "numberOfPlaces": "10",
     }
 
     # Add the future competition to the competitions list
@@ -89,4 +90,3 @@ def test_added_future_competition_is_displayed(client):
 
     # Check that the response contains the future competition name
     assert b"Future Competition" in response.data
-
