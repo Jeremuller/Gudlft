@@ -71,7 +71,7 @@ def show_summary():
         ]
 
         # If a club is found, show the welcome page with club and competition details
-        return render_template("welcome.html", club=club, competitions=future_competitions)
+        return render_template("welcome.html", club=club, competitions=future_competitions, clubs=clubs)
 
     except KeyError:
         # If the email field is missing, show an error message and return to the index page
@@ -156,9 +156,6 @@ def purchase_places():
         # Display a confirmation message, and render welcome template
         flash("Great-booking complete!")
     return render_template("welcome.html", club=club, competitions=competitions)
-
-
-# TODO: Add route for points display
 
 
 @app.route("/logout")
