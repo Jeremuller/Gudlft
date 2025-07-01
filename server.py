@@ -62,8 +62,16 @@ def show_summary():
             flash("The email you entered isn't found, please try again.")
             return render_template("index.html")
 
+        # Filter competitions to prevent passed competitions display
+        future_competitions = [
+            comp
+            for comp in competitions
+            if datetime.datetime.strptime(comp["date"], "%Y-%m-%d %H:%M:%S").date()
+            >= datetime.datetime.now().date()
+        ]
+
         # If a club is found, show the welcome page with club and competition details
-        return render_template("welcome.html", club=club, competitions=competitions)
+        return render_template("welcome.html", club=club, competitions=future_competitions)
 
     except KeyError:
         # If the email field is missing, show an error message and return to the index page
@@ -85,8 +93,6 @@ def book(competition, club):
 
     # Check if both club and competition exist
     if found_club and found_competition:
-        found_club = found_club[0]
-        found_competition = found_competition[0]
 
         # Render booking page with club and competition details
         return render_template(
