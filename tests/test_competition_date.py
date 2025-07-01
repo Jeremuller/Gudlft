@@ -69,5 +69,24 @@ def test_added_past_competition_not_displayed(client):
     # Check that the response does not contain the past competition name
     assert b"Past Competition" not in response.data
 
+def test_added_future_competition_is_displayed(client):
+    """
+    Test that a future competition is displayed.
+    """
+    # Create a future competition
+    future_competition = {
+        "name": "Future Competition",
+        "date": "2027-01-01 10:00:00",
+        "numberOfPlaces": "10"
+    }
 
+    # Add the future competition to the competitions list
+    competitions.append(future_competition)
+
+    # Assume "test@example.com" is an email associated with a valid club
+    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
+    assert response.status_code == 200
+
+    # Check that the response contains the future competition name
+    assert b"Future Competition" in response.data
 
