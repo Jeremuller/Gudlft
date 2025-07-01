@@ -75,7 +75,7 @@ def test_successful_purchase_within_12_places_limit(client):
     """
 
     competition_name = "Spring Festival"
-    club_name = "Simply Lift"
+    club_name = "Iron Temple"
 
     booked_places[(club_name, competition_name)] = 0
     print(booked_places)
@@ -84,6 +84,10 @@ def test_successful_purchase_within_12_places_limit(client):
     club = next(c for c in clubs if c["name"] == club_name)
     # Sufficient points for testing
     club["points"] = "50"
+
+    # Reset competition places to a sufficient amount
+    competition = next(c for c in competitions if c["name"] == competition_name)
+    competition["numberOfPlaces"] = 50  # Sufficient places for testing
 
     # First booking of 10 places
     places_to_buy = 10
@@ -107,10 +111,15 @@ def test_purchase_exceeding_12_places_limit(client):
     club_name = "Simply Lift"
 
     booked_places[(club_name, competition_name)] = 0
+    print(booked_places)
 
     # Initial setup
     club = next(c for c in clubs if c["name"] == club_name)
     club["points"] = "50"  # Sufficient points for testing
+
+    # Reset competition places to a sufficient amount
+    competition = next(c for c in competitions if c["name"] == competition_name)
+    competition["numberOfPlaces"] = 50  # Sufficient places for testing
 
     # First booking of 12 places
     places_to_buy = 12
@@ -125,6 +134,3 @@ def test_purchase_exceeding_12_places_limit(client):
     assert response.status_code == 200
     assert get_booked_places(club_name, competition_name) == places_to_buy
     print(booked_places)
-
-    # Attempt to book 1 more place
-
