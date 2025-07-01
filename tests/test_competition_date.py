@@ -1,7 +1,7 @@
 import pytest
 import datetime
 
-from server import clubs, app, get_current_date
+from server import clubs, app, get_current_date, competitions
 
 
 @pytest.fixture
@@ -46,4 +46,28 @@ def test_upcoming_competitions_included(client):
     future_competition_names = ["Spring Festival", "Fall Classic"]
     for competition_name in future_competition_names:
         assert competition_name.encode() in response.data
+
+
+def test_added_past_competition_not_displayed(client):
+    """
+    Test that a past competition is not displayed.
+    """
+    # Create a past competition
+    past_competition = {
+        "name": "Past Competition",
+        "date": "2020-01-01 10:00:00",
+        "numberOfPlaces": "10"
+    }
+
+    # Add the past competition to the competitions list
+    competitions.append(past_competition)
+
+    # Assume "test@example.com" is an email associated with a valid club
+    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
+    assert response.status_code == 200
+
+    # Check that the response does not contain the past competition name
+    assert b"Past Competition" not in response.data
+
+
 
