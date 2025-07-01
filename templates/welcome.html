@@ -34,8 +34,7 @@ Points available: {{club['points']}}
 <ul>
     {% for club in clubs%}
     <li>
-        {{club['name']}}<br/>
-        Points: {{club['points']}}</br>
+        {{ club['name']}} - Points: {{club['points'] }}
     </li>
     <hr/>
     {% endfor %}
