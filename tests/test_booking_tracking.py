@@ -87,7 +87,8 @@ def test_successful_purchase_within_12_places_limit(client):
 
     # Reset competition places to a sufficient amount
     competition = next(c for c in competitions if c["name"] == competition_name)
-    competition["numberOfPlaces"] = 50  # Sufficient places for testing
+    # Sufficient places for testing
+    competition["numberOfPlaces"] = 50
 
     # First booking of 10 places
     places_to_buy = 10
@@ -119,7 +120,8 @@ def test_purchase_exceeding_12_places_limit(client):
 
     # Reset competition places to a sufficient amount
     competition = next(c for c in competitions if c["name"] == competition_name)
-    competition["numberOfPlaces"] = 50  # Sufficient places for testing
+    # Sufficient places for testing
+    competition["numberOfPlaces"] = 50
 
     # First booking of 12 places
     places_to_buy = 12
