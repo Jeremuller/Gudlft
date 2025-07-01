@@ -113,7 +113,7 @@ def purchase_places():
 
     # Check if the club has already booked 12 or more places for this competition
     key = (club["name"], competition["name"])
-    if booked_places.get(key, 0) + places_required >= 12:
+    if booked_places.get(key, 0) + places_required > 12:
         flash("A club cannot book more than 12 places in total for a competition.")
         return render_template("welcome.html", club=club, competitions=competitions)
 
