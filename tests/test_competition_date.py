@@ -31,3 +31,17 @@ def test_past_competitions_not_included(client):
     past_competition_names = ["2020 Spring Festival", "2020 Fall Classic"]
     for competition_name in past_competition_names:
         assert competition_name.encode() not in response.data
+
+
+def test_upcoming_competitions_included(client):
+    """
+    Test that future competitions are included in the data returned by the show_summary function.
+    """
+    # Assume "test@example.com" is an email associated with a valid club
+    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
+    assert response.status_code == 200
+
+    # Check that the response contains future competition names
+    future_competition_names = ["Spring Festival", "Fall Classic"]
+    for competition_name in future_competition_names:
+        assert competition_name.encode() in response.data
