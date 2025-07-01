@@ -1,6 +1,6 @@
 import pytest
 
-from server import clubs, app, competitions
+from server import clubs, app, competitions, booked_places
 
 
 @pytest.fixture
@@ -87,6 +87,10 @@ def test_successful_purchase_with_enough_points(client):
     # Define competition and club for the test
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
+
+    # Reset the booked places for this specific club and competition
+    booked_places[(club_name, competition_name)] = 0
+
     club = next(c for c in clubs if c["name"] == club_name)
     # Set initial points to a sufficient value
     club["points"] = "10"
@@ -115,8 +119,11 @@ def test_successful_purchase_without_enough_points(client):
     # Define competition and club for the test
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
-    club = next(c for c in clubs if c["name"] == club_name)
 
+    # Reset the booked places for this specific club and competition
+    booked_places[(club_name, competition_name)] = 0
+
+    club = next(c for c in clubs if c["name"] == club_name)
     # Set initial points to a low value
     club["points"] = "3"
 
@@ -144,13 +151,21 @@ def test_successful_purchase_with_enough_places(client):
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
 
+    # Reset the booked places for this specific club and competition
+    booked_places[(club_name, competition_name)] = 0
+
     # Set initial points and places for the test
     club = next(c for c in clubs if c["name"] == club_name)
     # Sufficient points
     club["points"] = "10"
+
     competition = next(c for c in competitions if c["name"] == competition_name)
     # Sufficient places
     competition["numberOfPlaces"] = "10"
+
+    # Debug print before purchase
+    print("Before purchase - Club points:", club["points"])
+    print("Before purchase - Competition places:", competition["numberOfPlaces"])
 
     places_to_buy = 5
     response = client.post(
@@ -161,6 +176,12 @@ def test_successful_purchase_with_enough_places(client):
             "places": str(places_to_buy),
         },
     )
+
+    # Debug print after purchase
+    updated_competition = next(c for c in competitions if c["name"] == competition_name)
+    updated_club = next(c for c in clubs if c["name"] == club_name)
+    print("After purchase - Club points:", updated_club["points"])
+    print("After purchase - Competition places:", updated_competition["numberOfPlaces"])
 
     assert response.status_code == 200
     updated_competition = next(c for c in competitions if c["name"] == competition_name)
