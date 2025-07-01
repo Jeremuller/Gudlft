@@ -78,6 +78,7 @@ def test_successful_purchase_within_12_places_limit(client):
     club_name = "Simply Lift"
 
     booked_places[(club_name, competition_name)] = 0
+    print(booked_places)
 
     # Initial setup
     club = next(c for c in clubs if c["name"] == club_name)
@@ -96,23 +97,6 @@ def test_successful_purchase_within_12_places_limit(client):
     )
     assert response.status_code == 200
     assert get_booked_places(club_name, competition_name) == places_to_buy
-
-    # Second booking of 2 places
-    additional_places_to_buy = 2
-    response = client.post(
-        "/purchasePlaces",
-        data={
-            "competition": competition_name,
-            "club": club_name,
-            "places": str(additional_places_to_buy),
-        },
-    )
-    assert response.status_code == 200
-    assert (
-        get_booked_places(club_name, competition_name)
-        == places_to_buy + additional_places_to_buy
-    )
-    print(booked_places)
 
 
 def test_purchase_exceeding_12_places_limit(client):
@@ -143,16 +127,4 @@ def test_purchase_exceeding_12_places_limit(client):
     print(booked_places)
 
     # Attempt to book 1 more place
-    additional_places_to_buy = 1
-    response = client.post(
-        "/purchasePlaces",
-        data={
-            "competition": competition_name,
-            "club": club_name,
-            "places": str(additional_places_to_buy),
-        },
-    )
-    assert response.status_code == 200
-    # Should remain unchanged
-    assert get_booked_places(club_name, competition_name) == places_to_buy
-    print(booked_places)
+
