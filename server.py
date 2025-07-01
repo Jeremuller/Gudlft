@@ -1,4 +1,4 @@
-import json
+import json, datetime
 from flask import Flask, render_template, request, redirect, flash, url_for
 
 
@@ -23,6 +23,11 @@ clubs = load_clubs()
 
 # Dictionary to keep track of booked places
 booked_places = {}
+
+
+def get_current_date():
+    """Return the current date."""
+    return datetime.date.today()
 
 
 def get_booked_places(club_name, competition_name):
