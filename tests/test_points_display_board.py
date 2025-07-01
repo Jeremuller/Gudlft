@@ -14,14 +14,13 @@ def client():
         yield client
 
 
-def test_display_club_points(client):
+def test_display_all_club_names_and_points(client):
     """
-    Test that the points of other clubs are displayed when logged in as Iron Temple.
+    Test that all clubs and their points are correctly displayed on the welcome page.
     """
-    # Assume "iron_temple@example.com" is the email associated with Iron Temple
     response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
     assert response.status_code == 200
 
-    # Check that the response contains the points of Simply Lift and She Lifts
-    assert b"Simply Lift" in response.data
-    assert b"She Lifts" in response.data
+    for club in clubs:
+        expected_display = f"{club['name']} - Points: {club['points']}"
+        assert expected_display.encode() in response.data
