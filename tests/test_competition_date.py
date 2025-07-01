@@ -32,6 +32,7 @@ def test_past_competition_not_displayed(client):
     assert response.status_code == 200
     assert b"Something went wrong" in response.data
 
+    # Double check with the other passed competition
     competition_name = "2020 Fall Classic"
 
     response = client.get(f"/book/{competition_name}/{club_name}")
@@ -39,3 +40,26 @@ def test_past_competition_not_displayed(client):
     # Check that the response redirects or shows an error message
     assert response.status_code == 200
     assert b"Something went wrong" in response.data
+
+
+def test_incoming_competition_displayed(client):
+    """
+    Test that future competitions are displayed by the book function.
+    """
+    competition_name = "Spring Festival"  # This competition is in the future
+    club_name = "Simply Lift"
+
+    response = client.get(f"/book/{competition_name}/{club_name}")
+
+    # Check that the response contains the correct competition details
+    assert response.status_code == 200
+    assert b"booking.html" in response.data
+
+    # Double check with the other incoming competition
+    competition_name = "Fall Classic"
+
+    response = client.get(f"/book/{competition_name}/{club_name}")
+
+    # Check that the response redirects or shows an error message
+    assert response.status_code == 200
+    assert b"booking.html" in response.data
