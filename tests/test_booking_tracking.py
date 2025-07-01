@@ -134,3 +134,17 @@ def test_purchase_exceeding_12_places_limit(client):
     assert response.status_code == 200
     assert get_booked_places(club_name, competition_name) == places_to_buy
     print(booked_places)
+
+    # Attempt to book 1 more place
+    additional_places_to_buy = 1
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition_name,
+            "club": club_name,
+            "places": str(additional_places_to_buy),
+        },
+    )
+    assert response.status_code == 200
+    # Should remain unchanged
+    assert get_booked_places(club_name, competition_name) == places_to_buy
