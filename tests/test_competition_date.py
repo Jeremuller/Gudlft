@@ -1,4 +1,5 @@
-import pytest, datetime
+import pytest
+import datetime
 
 from server import clubs, app, get_current_date
 
@@ -45,3 +46,4 @@ def test_upcoming_competitions_included(client):
     future_competition_names = ["Spring Festival", "Fall Classic"]
     for competition_name in future_competition_names:
         assert competition_name.encode() in response.data
+
