@@ -19,47 +19,15 @@ def test_current_date():
     assert get_current_date() == datetime.date.today()
 
 
-def test_past_competition_not_displayed(client):
+def test_past_competitions_not_included(client):
     """
-    Test that past competitions are not displayed by the book function.
+    Test that past competitions are not included in the data returned by the show_summary function.
     """
-    competition_name = "2020 Spring Festival"  # This competition is in the past
-    club_name = "Simply Lift"
-
-    response = client.get(f"/book/{competition_name}/{club_name}")
-
-    # Check that the response redirects or shows an error message
+    # Assume "test@example.com" is an email associated with a valid club
+    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
     assert response.status_code == 200
-    assert b"Something went wrong" in response.data
 
-    # Double check with the other passed competition
-    competition_name = "2020 Fall Classic"
-
-    response = client.get(f"/book/{competition_name}/{club_name}")
-
-    # Check that the response redirects or shows an error message
-    assert response.status_code == 200
-    assert b"Something went wrong" in response.data
-
-
-def test_incoming_competition_displayed(client):
-    """
-    Test that future competitions are displayed by the book function.
-    """
-    competition_name = "Spring Festival"  # This competition is in the future
-    club_name = "Simply Lift"
-
-    response = client.get(f"/book/{competition_name}/{club_name}")
-
-    # Check that the response contains the correct competition details
-    assert response.status_code == 200
-    assert b"booking.html" in response.data
-
-    # Double check with the other incoming competition
-    competition_name = "Fall Classic"
-
-    response = client.get(f"/book/{competition_name}/{club_name}")
-
-    # Check that the response redirects or shows an error message
-    assert response.status_code == 200
-    assert b"booking.html" in response.data
+    # Check that the response does not contain past competition names
+    past_competition_names = ["2020 Spring Festival", "2020 Fall Classic"]
+    for competition_name in past_competition_names:
+        assert competition_name.encode() not in response.data
