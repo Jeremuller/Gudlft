@@ -23,8 +23,19 @@ def test_booking_places_update_club_points(client):
     competition_name = "Spring Festival"
     club_name = "Simply Lift"
 
+    # Set initial points and places for the test
+    club = next(c for c in clubs if c["name"] == club_name)
+    # Sufficient points for the purchase
+    club["points"] = "10"
+    competition = next(c for c in competitions if c["name"] == competition_name)
+    # Sufficient places for the purchase
+    competition["numberOfPlaces"] = "10"
+
+    # Reset the booked places for this specific club and competition
+    booked_places[(club_name, competition_name)] = 0
+
     # Retrieve initial points of the club and define the number of places to buy
-    initial_points = int(next(c for c in clubs if c["name"] == club_name)["points"])
+    initial_points = int(club["points"])
     places_to_buy = 3
 
     # Simulate a POST request to purchase places
