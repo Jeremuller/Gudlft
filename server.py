@@ -73,13 +73,27 @@ def show_summary():
 
 @app.route("/book/<competition>/<club>")
 def book(competition, club):
+    """
+    Handle booking of competition places by a club.
+
+    Returns:
+    - Rendered template: Booking page or welcome page with error message.
+    """
+    # Retrieve club and competition details from the data lists
     found_club = [c for c in clubs if c["name"] == club][0]
     found_competition = [c for c in competitions if c["name"] == competition][0]
+
+    # Check if both club and competition exist
     if found_club and found_competition:
+        found_club = found_club[0]
+        found_competition = found_competition[0]
+
+        # Render booking page with club and competition details
         return render_template(
             "booking.html", club=found_club, competition=found_competition
         )
     else:
+        # Flash error message and redirect to welcome page if something went wrong
         flash("Something went wrong, please try again")
         return render_template("welcome.html", club=club, competitions=competitions)
 
