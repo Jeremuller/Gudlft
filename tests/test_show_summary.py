@@ -23,9 +23,15 @@ def setup_data():
     original_competitions = competitions.copy()
     original_booked_places = booked_places.copy()
 
-    # Add test datas
+    # Add test datas for club and competition
     clubs.append({"name": "Test Club", "email": "test@club.com", "points": 10})
-    competitions.append({"name": "Test Competition", "date": "2023-12-01 10:00:00", "numberOfPlaces": 10})
+    competitions.append(
+        {
+            "name": "Test Competition",
+            "date": "2026-12-01 10:00:00",
+            "numberOfPlaces": 10,
+        }
+    )
 
     yield
 
@@ -69,3 +75,18 @@ def test_show_summary_with_missing_email(client):
     data = response.data.decode()
     assert response.status_code == 200
     assert "Form isn&#39;t complete, please enter an email address." in data
+
+
+def test_show_summary_with_booked_places(client, setup_data):
+    """Test the show_summary route with booked places information."""
+    # Add booked places for testing purpose
+    booked_places[("Test Club", "Test Competition")] = 5
+
+    response = client.post("/showSummary", data={"email": "test@club.com"})
+    data = response.data.decode()
+
+    # Verify the response contains the expected information
+    assert response.status_code == 200
+    assert "Welcome, test@club.com" in data
+    assert "Test Competition" in data
+    assert "Places already booked: 5 / 12" in data
