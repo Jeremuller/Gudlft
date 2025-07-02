@@ -70,8 +70,14 @@ def show_summary():
             >= datetime.datetime.now().date()
         ]
 
+        # Add booked_places information to each competition
+        for comp in future_competitions:
+            comp["booked_places"] = get_booked_places(club["name"], comp["name"])
+
         # If a club is found, show the welcome page with club and competition details
-        return render_template("welcome.html", club=club, competitions=future_competitions, clubs=clubs)
+        return render_template(
+            "welcome.html", club=club, competitions=future_competitions, clubs=clubs
+        )
 
     except KeyError:
         # If the email field is missing, show an error message and return to the index page
