@@ -18,7 +18,7 @@ def client():
 def setup_data():
     """Fixture to set up initial data for tests."""
 
-    # Copy from original datas
+    # Copy from original datas to save them
     original_clubs = clubs.copy()
     original_competitions = competitions.copy()
     original_booked_places = booked_places.copy()
