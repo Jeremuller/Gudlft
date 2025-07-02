@@ -1,7 +1,7 @@
 import pytest
 import datetime
 
-from server import clubs, app, get_current_date, competitions, booked_places
+from server import clubs, app, get_current_date, competitions
 
 
 @pytest.fixture
@@ -19,19 +19,26 @@ def client():
 def setup_data():
     """Fixture to set up initial data for tests."""
 
-    # Copy from original datas
+    # Copy from original datas to save them
     original_clubs = clubs.copy()
     original_competitions = competitions.copy()
-    original_booked_places = booked_places.copy()
 
     # Add test datas for club and competition
     clubs.append({"name": "Test Club", "email": "test@club.com", "points": 10})
-    competitions.append(
-        {
-            "name": "Test Competition",
-            "date": "2026-12-01 10:00:00",
-            "numberOfPlaces": 10,
-        }
+    # Add competitions with different dates for testing
+    competitions.extend(
+        [
+            {
+                "name": "Past Competition",
+                "date": "2000-01-01 10:00:00",
+                "numberOfPlaces": 10,
+            },
+            {
+                "name": "Future Competition",
+                "date": "2030-01-01 10:00:00",
+                "numberOfPlaces": 10,
+            },
+        ]
     )
 
     yield
@@ -41,8 +48,7 @@ def setup_data():
     clubs.extend(original_clubs)
     competitions.clear()
     competitions.extend(original_competitions)
-    booked_places.clear()
-    booked_places.update(original_booked_places)
+
 
 def test_current_date():
     """Test that the program correctly identifies the current date."""
