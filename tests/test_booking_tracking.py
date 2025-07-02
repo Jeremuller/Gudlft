@@ -94,29 +94,38 @@ def test_track_places_booked_by_clubs(client, setup_data):
     )
 
 
-def test_successful_purchase_within_12_places_limit(client):
+@pytest.mark.parametrize(
+    "initial_places, places_to_buy, expected_total",
+    [
+        (0, 10, 10),  # Test successful purchase within limit
+        (10, 2, 12),  # Test purchase reaching the limit
+        (12, 1, 12),  # Test purchase exceeding the limit
+    ],
+)
+def test_purchase_places_limits(
+    client, setup_data, initial_places, places_to_buy, expected_total
+):
     """
-    Test that a club can successfully purchase places as long as the total does not exceed 12.
+    Parametrized test for different purchase scenarios.
+    Tests successful purchases, reaching the limit, and exceeding the limit.
     """
+    competition_name = "Test Competition"
+    club_name = "Test Club"
 
-    competition_name = "Spring Festival"
-    club_name = "Iron Temple"
-
-    booked_places[(club_name, competition_name)] = 0
-    print(booked_places)
-
-    # Initial setup
+    # Set initial points and places
     club = next(c for c in clubs if c["name"] == club_name)
     # Sufficient points for testing
     club["points"] = "50"
 
-    # Reset competition places to a sufficient amount
     competition = next(c for c in competitions if c["name"] == competition_name)
     # Sufficient places for testing
     competition["numberOfPlaces"] = 50
 
-    # First booking of 10 places
-    places_to_buy = 10
+    # Set initial booked places if needed
+    if initial_places > 0:
+        booked_places[(club_name, competition_name)] = initial_places
+
+    # Attempt to book places
     response = client.post(
         "/purchasePlaces",
         data={
@@ -126,52 +135,4 @@ def test_successful_purchase_within_12_places_limit(client):
         },
     )
     assert response.status_code == 200
-    assert get_booked_places(club_name, competition_name) == places_to_buy
-
-
-def test_purchase_exceeding_12_places_limit(client):
-    """
-    Test that a purchase fails if the total number of places exceeds 12.
-    """
-    competition_name = "Spring Festival"
-    club_name = "Simply Lift"
-
-    booked_places[(club_name, competition_name)] = 0
-    print(booked_places)
-
-    # Initial setup
-    club = next(c for c in clubs if c["name"] == club_name)
-    club["points"] = "50"  # Sufficient points for testing
-
-    # Reset competition places to a sufficient amount
-    competition = next(c for c in competitions if c["name"] == competition_name)
-    # Sufficient places for testing
-    competition["numberOfPlaces"] = 50
-
-    # First booking of 12 places
-    places_to_buy = 12
-    response = client.post(
-        "/purchasePlaces",
-        data={
-            "competition": competition_name,
-            "club": club_name,
-            "places": str(places_to_buy),
-        },
-    )
-    assert response.status_code == 200
-    assert get_booked_places(club_name, competition_name) == places_to_buy
-    print(booked_places)
-
-    # Attempt to book 1 more place
-    additional_places_to_buy = 1
-    response = client.post(
-        "/purchasePlaces",
-        data={
-            "competition": competition_name,
-            "club": club_name,
-            "places": str(additional_places_to_buy),
-        },
-    )
-    assert response.status_code == 200
-    # Should remain unchanged
-    assert get_booked_places(club_name, competition_name) == places_to_buy
+    assert get_booked_places(club_name, competition_name) == expected_total
