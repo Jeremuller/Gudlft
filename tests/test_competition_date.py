@@ -55,32 +55,27 @@ def test_current_date():
     assert get_current_date() == datetime.date.today()
 
 
-def test_past_competitions_not_included(client):
+def test_past_competitions_not_included(client, setup_data):
     """
     Test that past competitions are not included in the data returned by the show_summary function.
+    Uses the setup_data fixture to ensure we have both past and future competitions.
     """
-    # Assume "test@example.com" is an email associated with a valid club
-    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
+    response = client.post("/showSummary", data={"email": "test@club.com"})
     assert response.status_code == 200
 
-    # Check that the response does not contain past competition names
-    past_competition_names = ["2020 Spring Festival", "2020 Fall Classic"]
-    for competition_name in past_competition_names:
-        assert competition_name.encode() not in response.data
+    # Check that past competition is not displayed
+    assert b"Past Competition" not in response.data
 
 
-def test_upcoming_competitions_included(client):
+def test_upcoming_competitions_included(client, setup_data):
     """
     Test that future competitions are included in the data returned by the show_summary function.
     """
-    # Assume "test@example.com" is an email associated with a valid club
-    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
+    response = client.post("/showSummary", data={"email": "test@club.com"})
     assert response.status_code == 200
 
-    # Check that the response contains future competition names
-    future_competition_names = ["Spring Festival", "Fall Classic"]
-    for competition_name in future_competition_names:
-        assert competition_name.encode() in response.data
+    # Check that future competition is displayed
+    assert b"Future Competition" in response.data
 
 
 def test_added_past_competition_not_displayed(client):
