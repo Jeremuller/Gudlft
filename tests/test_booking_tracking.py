@@ -52,18 +52,13 @@ def test_initialization_of_booking_tracking(setup_data):
     assert len(booked_places) == 0
 
 
-def test_track_places_booked_by_clubs(client):
+def test_track_places_booked_by_clubs(client, setup_data):
     """
     Test that the system correctly tracks the number of places booked by a club for a competition.
     Performing two successive purchases to test if the datas are correctly tracked.
     """
-    competition_name = "Spring Festival"
-    club_name = "Simply Lift"
-
-    # Initial setup
-    club = next(c for c in clubs if c["name"] == club_name)
-    # Sufficient points for testing
-    club["points"] = "50"
+    competition_name = "Test Competition"
+    club_name = "Test Club"
 
     # First booking
     places_to_buy = 5
