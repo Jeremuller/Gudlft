@@ -39,7 +39,10 @@ def get_booked_places(club_name, competition_name):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    """
+    Render the index page with club information.
+    """
+    return render_template("index.html", clubs=clubs)
 
 
 @app.route("/showSummary", methods=["POST"])
@@ -76,7 +79,7 @@ def show_summary():
 
         # If a club is found, show the welcome page with club and competition details
         return render_template(
-            "welcome.html", club=club, competitions=future_competitions, clubs=clubs
+            "welcome.html", club=club, competitions=future_competitions
         )
 
     except KeyError:
