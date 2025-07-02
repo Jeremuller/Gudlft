@@ -48,7 +48,7 @@ def test_display_all_club_names_and_points(client):
     """
     Test that all clubs and their points are correctly displayed on the welcome page.
     """
-    response = client.post("/", data={"email": "admin@irontemple.com"})
+    response = client.get("/")
     assert response.status_code == 200
 
     for club in clubs:
