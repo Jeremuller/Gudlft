@@ -25,21 +25,6 @@ def setup_data():
 
     # Add test datas for club and competition
     clubs.append({"name": "Test Club", "email": "test@club.com", "points": 10})
-    # Add competitions with different dates for testing
-    competitions.extend(
-        [
-            {
-                "name": "Past Competition",
-                "date": "2000-01-01 10:00:00",
-                "numberOfPlaces": 10,
-            },
-            {
-                "name": "Future Competition",
-                "date": "2030-01-01 10:00:00",
-                "numberOfPlaces": 10,
-            },
-        ]
-    )
 
     yield
 
@@ -55,68 +40,34 @@ def test_current_date():
     assert get_current_date() == datetime.date.today()
 
 
-def test_past_competitions_not_included(client, setup_data):
+@pytest.mark.parametrize("date_offset, expected_display", [
+    (-1, False),  # Past competition (1 day ago)
+    (0, True),   # Today's competition
+    (1, True),   # Tomorrow's competition
+    (30, True)   # Future competition (30 days from now)
+])
+def test_competition_display_based_on_date(client, setup_data, date_offset, expected_display):
     """
-    Test that past competitions are not included in the data returned by the show_summary function.
-    Uses the setup_data fixture to ensure we have both past and future competitions.
+    Parametrized test to check competition display based on date.
+    Tests various date offsets to verify display logic.
     """
+    # Add a competition with the specific date offset
+    test_date = (datetime.datetime.now() + datetime.timedelta(days=date_offset)).strftime("%Y-%m-%d %H:%M:%S")
+    test_name = f"Test Competition {date_offset}"
+
+    competitions.append({
+        "name": test_name,
+        "date": test_date,
+        "numberOfPlaces": 10
+    })
+
     response = client.post("/showSummary", data={"email": "test@club.com"})
     assert response.status_code == 200
 
-    # Check that past competition is not displayed
-    assert b"Past Competition" not in response.data
+    if expected_display:
+        assert test_name.encode() in response.data
+    else:
+        assert test_name.encode() not in response.data
 
-
-def test_upcoming_competitions_included(client, setup_data):
-    """
-    Test that future competitions are included in the data returned by the show_summary function.
-    """
-    response = client.post("/showSummary", data={"email": "test@club.com"})
-    assert response.status_code == 200
-
-    # Check that future competition is displayed
-    assert b"Future Competition" in response.data
-
-
-def test_added_past_competition_not_displayed(client):
-    """
-    Test that a past competition is not displayed.
-    """
-    # Create a past competition
-    past_competition = {
-        "name": "Past Competition",
-        "date": "2020-01-01 10:00:00",
-        "numberOfPlaces": "10",
-    }
-
-    # Add the past competition to the competitions list
-    competitions.append(past_competition)
-
-    # Assume "test@example.com" is an email associated with a valid club
-    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
-    assert response.status_code == 200
-
-    # Check that the response does not contain the past competition name
-    assert b"Past Competition" not in response.data
-
-
-def test_added_future_competition_is_displayed(client):
-    """
-    Test that a future competition is displayed.
-    """
-    # Create a future competition
-    future_competition = {
-        "name": "Future Competition",
-        "date": "2027-01-01 10:00:00",
-        "numberOfPlaces": "10",
-    }
-
-    # Add the future competition to the competitions list
-    competitions.append(future_competition)
-
-    # Assume "test@example.com" is an email associated with a valid club
-    response = client.post("/showSummary", data={"email": "admin@irontemple.com"})
-    assert response.status_code == 200
-
-    # Check that the response contains the future competition name
-    assert b"Future Competition" in response.data
+    # Clean up - remove the test competition we just added
+    competitions[:] = [c for c in competitions if c["name"] != test_name]
