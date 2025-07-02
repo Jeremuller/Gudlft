@@ -1,6 +1,6 @@
 import pytest
 
-from server import clubs, app
+from server import clubs, app, competitions, booked_places
 
 
 @pytest.fixture
@@ -14,15 +14,39 @@ def client():
         yield client
 
 
-def test_show_summary_with_valid_email(client):
+@pytest.fixture
+def setup_data():
+    """Fixture to set up initial data for tests."""
+
+    # Copy from original datas
+    original_clubs = clubs.copy()
+    original_competitions = competitions.copy()
+    original_booked_places = booked_places.copy()
+
+    # Add test datas
+    clubs.append({"name": "Test Club", "email": "test@club.com", "points": 10})
+    competitions.append({"name": "Test Competition", "date": "2023-12-01 10:00:00", "numberOfPlaces": 10})
+
+    yield
+
+    # Restore original datas
+    clubs.clear()
+    clubs.extend(original_clubs)
+    competitions.clear()
+    competitions.extend(original_competitions)
+    booked_places.clear()
+    booked_places.update(original_booked_places)
+
+
+def test_show_summary_with_valid_email(client, setup_data):
     """
     Test the show_summary route with a valid email.
     Verifies that the response status code is 200 and the welcome message is present.
     """
-    response = client.post("/showSummary", data={"email": "john@simplylift.co"})
+    response = client.post("/showSummary", data={"email": "test@club.com"})
     data = response.data.decode()
     assert response.status_code == 200
-    assert "Welcome, john@simplylift.co" in data
+    assert "Welcome, test@club.com" in data
 
 
 def test_show_summary_with_invalid_email(client):
