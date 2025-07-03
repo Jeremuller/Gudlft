@@ -44,27 +44,21 @@ def setup_data():
     booked_places.update(original_booked_places)
 
 
-def test_booking_places_update_club_points(client):
+def test_booking_places_update_club_points(client, setup_data):
     """
     Test the purchase of places and verify the club points are correctly updated.
+    Uses test data from setup_data fixture.
     """
 
     # Define competition and club for the test
-    competition_name = "Spring Festival"
-    club_name = "Simply Lift"
+    competition_name = "Test Competition"
+    club_name = "Test Club"
 
-    # Set initial points and places for the test
+    # Get test club and competition
     club = next(c for c in clubs if c["name"] == club_name)
-    # Sufficient points for the purchase
-    club["points"] = "10"
     competition = next(c for c in competitions if c["name"] == competition_name)
-    # Sufficient places for the purchase
-    competition["numberOfPlaces"] = "10"
 
-    # Reset the booked places for this specific club and competition
-    booked_places[(club_name, competition_name)] = 0
-
-    # Retrieve initial points of the club and define the number of places to buy
+    # Store initial values
     initial_points = int(club["points"])
     places_to_buy = 3
 
