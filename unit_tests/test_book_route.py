@@ -1,5 +1,6 @@
-from server import app, competitions, clubs
 import pytest
+
+from server import app, competitions, clubs
 
 
 @pytest.fixture
@@ -68,8 +69,9 @@ def test_book_route_missing_competition(client, setup_data):
 
     # Verify response status code
     assert response.status_code == 200
-    # Verify template content
-    assert b"welcome.html" in response.data
+
+    assert b"Welcome," in response.data
+    assert b"<h3>Competitions:</h3>" in response.data
     assert b"Something went wrong" in response.data
 
 
@@ -86,5 +88,6 @@ def test_book_route_missing_club(client, setup_data):
     # Verify response status code
     assert response.status_code == 200
     # Verify template content
-    assert b"welcome.html" in response.data
+    assert b"Welcome," in response.data
+    assert b"<h3>Competitions:</h3>" in response.data
     assert b"Something went wrong" in response.data
