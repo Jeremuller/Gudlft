@@ -56,4 +56,35 @@ def test_book_route_success(client, setup_data):
     assert club_name.encode() in response.data
 
 
+def test_book_route_missing_competition(client, setup_data):
+    """
+    Test booking route with non-existent competition.
+    Should return welcome page with error message.
+    """
+    competition_name = "UnknownComp"  # This doesn't exist
+    club_name = "Test Club"  # This exists
 
+    response = client.get(f"/book/{competition_name}/{club_name}")
+
+    # Verify response status code
+    assert response.status_code == 200
+    # Verify template content
+    assert b"welcome.html" in response.data
+    assert b"Something went wrong" in response.data
+
+
+def test_book_route_missing_club(client, setup_data):
+    """
+    Test booking route with non-existent club.
+    Should return welcome page with error message.
+    """
+    competition_name = "Test Competition"  # This exists
+    club_name = "UnknownClub"  # This doesn't exist
+
+    response = client.get(f"/book/{competition_name}/{club_name}")
+
+    # Verify response status code
+    assert response.status_code == 200
+    # Verify template content
+    assert b"welcome.html" in response.data
+    assert b"Something went wrong" in response.data
