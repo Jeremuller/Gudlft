@@ -2,7 +2,7 @@ bin
 include
 lib
 .Python
-tests/
+unit_tests/
 .envrc
 __pycache__
 .venv/

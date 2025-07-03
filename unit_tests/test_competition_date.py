@@ -17,7 +17,7 @@ def client():
 
 @pytest.fixture
 def setup_data():
-    """Fixture to set up initial data for tests."""
+    """Fixture to set up initial data for unit_tests."""
 
     # Copy from original datas to save them
     original_clubs = clubs.copy()
