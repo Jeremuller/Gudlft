@@ -56,7 +56,6 @@ def test_booking_places_update_club_points(client, setup_data):
 
     # Get test club and competition
     club = next(c for c in clubs if c["name"] == club_name)
-    competition = next(c for c in competitions if c["name"] == competition_name)
 
     # Store initial values
     initial_points = int(club["points"])
