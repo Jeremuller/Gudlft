@@ -44,6 +44,77 @@ def setup_data():
     booked_places.update(original_booked_places)
 
 
+@pytest.mark.parametrize(
+    "initial_points, competition_places, places_to_buy, expected_points, expected_comp_places, should_succeed",
+    [
+        # Normal cases
+        (10, 10, 3, 7, 7, True),  # Normal purchase
+        (10, 10, 5, 5, 5, True),  # Half purchase
+        # Limit cases
+        (10, 10, 10, 0, 0, True),  # Attempting to buy every places
+        (3, 10, 3, 0, 7, True),  # Purchasing with all club points
+        (10, 3, 3, 7, 0, True),  # Buying every available places
+        # Fail cases
+        (3, 10, 5, 3, 10, False),  # Not enough points
+        (10, 3, 5, 10, 3, False),  # Not enough places
+        (2, 3, 5, 2, 3, False),  # Not enough points and places
+        (0, 10, 1, 0, 10, False),  # No point
+        (10, 0, 1, 10, 0, False),  # No place
+    ],
+)
+def test_parametrized_purchase_scenarios(
+    client,
+    setup_data,
+    initial_points,
+    competition_places,
+    places_to_buy,
+    expected_points,
+    expected_comp_places,
+    should_succeed,
+):
+    """
+    Comprehensive parametrized test for all purchase scenarios.
+    Tests combinations of club points and competition places.
+    """
+    competition_name = "Test Competition"
+    club_name = "Test Club"
+
+    # Get and update test club and competition
+    club = next(c for c in clubs if c["name"] == club_name)
+    competition = next(c for c in competitions if c["name"] == competition_name)
+
+    # Set initial values
+    club["points"] = str(initial_points)
+    competition["numberOfPlaces"] = str(competition_places)
+
+    # Make purchase
+    response = client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition_name,
+            "club": club_name,
+            "places": str(places_to_buy),
+        },
+    )
+
+    # Verify response status
+    assert response.status_code == 200
+
+    # Get updated values
+    updated_club = next(c for c in clubs if c["name"] == club_name)
+    updated_competition = next(c for c in competitions if c["name"] == competition_name)
+
+    # Verify results based on expected success
+    if should_succeed:
+        # For successful purchases
+        assert int(updated_club["points"]) == expected_points
+        assert int(updated_competition["numberOfPlaces"]) == expected_comp_places
+    else:
+        # For failed purchases (values should remain unchanged)
+        assert int(updated_club["points"]) == initial_points
+        assert int(updated_competition["numberOfPlaces"]) == competition_places
+
+
 def test_booking_places_update_club_points(client, setup_data):
     """
     Test the purchase of places and verify the club points are correctly updated.
