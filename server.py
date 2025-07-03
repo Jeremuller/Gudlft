@@ -97,8 +97,10 @@ def book(competition, club):
     - Rendered template: Booking page or welcome page with error message.
     """
     # Retrieve club and competition details from the data lists
-    found_club = [c for c in clubs if c["name"] == club][0]
-    found_competition = [c for c in competitions if c["name"] == competition][0]
+    found_club = next((c for c in clubs if c["name"] == club), None)
+    found_competition = next(
+        (c for c in competitions if c["name"] == competition), None
+    )
 
     # Check if both club and competition exist
     if found_club and found_competition:
