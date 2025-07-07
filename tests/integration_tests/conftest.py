@@ -72,16 +72,3 @@ def integration_data():
     competitions.clear()
     competitions.extend(original_competitions)
 
-
-@pytest.fixture
-def logged_in_client(integration_client):
-    """
-    Simulates a logged-in client for tests requiring authentication.
-    Uses the integration_client fixture and adds login functionality.
-    """
-    # Here you would typically add login logic
-    # For example: integration_client.post('/login', data={...})
-
-    # For now, we'll just return the client as-is
-    # You can modify this when implementing authentication tests
-    return integration_client
