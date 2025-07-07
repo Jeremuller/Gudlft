@@ -75,7 +75,19 @@ def test_booking_failure_not_enough_points(integration_client):
     assert b"Not enough points" in response.data
 
 
+def test_booking_full_competition(integration_client):
+    """Test booking when competition has no places left"""
+    # Setup - book all places first
+    competition = next(c for c in competitions if c["name"] == "Integration Competition 2")
+    competition["numberOfPlaces"] = "0"
 
+    response = integration_client.post("/purchasePlaces", data={
+        "competition": competition["name"],
+        "club": "Integration Club 1",
+        "places": "1"
+    })
+
+    assert b"Not enough places available in the competition." in response.data
 
 
 
