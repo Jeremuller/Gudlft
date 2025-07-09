@@ -81,14 +81,19 @@ def test_booking_full_competition(integration_client):
     """
 
     # Setup - book all places first
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 2")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 2"
+    )
     competition["numberOfPlaces"] = "0"
 
-    response = integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": "Integration Club 1",
-        "places": "1"
-    })
+    response = integration_client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition["name"],
+            "club": "Integration Club 1",
+            "places": "1",
+        },
+    )
 
     assert b"Not enough places available in the competition." in response.data
 
@@ -99,18 +104,22 @@ def test_booking_points_limit(integration_client):
     """
     # Setup - club with enough points
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
 
     # Try to book 13 places
-    response = integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": club["name"],
-        "places": "13"
-    })
+    response = integration_client.post(
+        "/purchasePlaces",
+        data={"competition": competition["name"], "club": club["name"], "places": "13"},
+    )
 
     # Verifications
     assert response.status_code == 200
-    assert b"A club cannot book more than 12 places in total for a competition." in response.data
+    assert (
+        b"A club cannot book more than 12 places in total for a competition."
+        in response.data
+    )
     assert int(club["points"]) == 20
     assert int(competition["numberOfPlaces"]) == int(competition["numberOfPlaces"])
 
@@ -121,23 +130,23 @@ def test_multiple_bookings(integration_client):
     """
     club1 = next(c for c in clubs if c["name"] == "Integration Club 1")
     club2 = next(c for c in clubs if c["name"] == "Integration Club 2")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
 
     initial_places = int(competition["numberOfPlaces"])
 
     # First booking
-    integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": club1["name"],
-        "places": "5"
-    })
+    integration_client.post(
+        "/purchasePlaces",
+        data={"competition": competition["name"], "club": club1["name"], "places": "5"},
+    )
 
     # Second booking
-    integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": club2["name"],
-        "places": "3"
-    })
+    integration_client.post(
+        "/purchasePlaces",
+        data={"competition": competition["name"], "club": club2["name"], "places": "3"},
+    )
 
     # Verifications
     assert int(competition["numberOfPlaces"]) == initial_places - 8
