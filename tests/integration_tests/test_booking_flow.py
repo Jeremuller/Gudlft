@@ -180,3 +180,31 @@ def test_booking_missing_data(integration_client):
     # Verify no changes occurred
     assert int(club["points"]) == initial_points
     assert int(competition["numberOfPlaces"]) == initial_places
+
+
+def test_booking_invalid_data(integration_client):
+    """
+    Test booking with invalid data types.
+    Verifies:
+    - Server properly validates data types
+    - Returns specific error for invalid numbers
+    - Prevents any data corruption
+    """
+    # Get initial data for verification
+    club = next(c for c in clubs if c["name"] == "Integration Club 1")
+    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    initial_points = int(club["points"])
+    initial_places = int(competition["numberOfPlaces"])
+
+    # Send request with invalid places data
+    response = integration_client.post("/purchasePlaces", data={
+        "competition": competition["name"],
+        "club": club["name"],
+        "places": "abc"  # Invalid number
+    })
+
+    # Verifications
+    assert response.status_code == 400
+    # Verify no changes occurred
+    assert int(club["points"]) == initial_points
+    assert int(competition["numberOfPlaces"]) == initial_places
