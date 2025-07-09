@@ -226,25 +226,25 @@ def test_booking_tracking(integration_client):
     Test that booked places are properly tracked.
     """
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
 
     # First booking
-    integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": club["name"],
-        "places": "5"
-    })
+    integration_client.post(
+        "/purchasePlaces",
+        data={"competition": competition["name"], "club": club["name"], "places": "5"},
+    )
 
     # Verify tracking
     key = (club["name"], competition["name"])
     assert booked_places.get(key, 0) == 5
 
     # Second booking
-    integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": club["name"],
-        "places": "3"
-    })
+    integration_client.post(
+        "/purchasePlaces",
+        data={"competition": competition["name"], "club": club["name"], "places": "3"},
+    )
 
     # Verify updated tracking
     assert booked_places.get(key, 0) == 8
