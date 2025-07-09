@@ -152,3 +152,31 @@ def test_multiple_bookings(integration_client):
     assert int(competition["numberOfPlaces"]) == initial_places - 8
     assert int(club1["points"]) == 20 - 5
     assert int(club2["points"]) == 30 - 3
+
+
+def test_booking_missing_data(integration_client):
+    """
+    Test booking with missing form data.
+    Verifies:
+    - Server properly validates required fields
+    - Returns appropriate error status
+    - Maintains data integrity
+    """
+    # Get initial data for verification
+    club = next(c for c in clubs if c["name"] == "Integration Club 1")
+    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    initial_points = int(club["points"])
+    initial_places = int(competition["numberOfPlaces"])
+
+    # Send request with missing club data
+    response = integration_client.post("/purchasePlaces", data={
+        "competition": competition["name"],
+        # Missing club name intentionally
+        "places": "5"
+    })
+
+    # Verifications
+    assert response.status_code == 400  # Bad Request
+    # Verify no changes occurred
+    assert int(club["points"]) == initial_points
+    assert int(competition["numberOfPlaces"]) == initial_places
