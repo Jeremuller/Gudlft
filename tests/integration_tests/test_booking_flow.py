@@ -164,16 +164,21 @@ def test_booking_missing_data(integration_client):
     """
     # Get initial data for verification
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
     # Send request with missing club data
-    response = integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        # Missing club name intentionally
-        "places": "5"
-    })
+    response = integration_client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition["name"],
+            # Missing club name intentionally
+            "places": "5",
+        },
+    )
 
     # Verifications
     assert response.status_code == 400  # Bad Request
@@ -192,19 +197,25 @@ def test_booking_invalid_data(integration_client):
     """
     # Get initial data for verification
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
     # Send request with invalid places data
-    response = integration_client.post("/purchasePlaces", data={
-        "competition": competition["name"],
-        "club": club["name"],
-        "places": "abc"  # Invalid number
-    })
+    response = integration_client.post(
+        "/purchasePlaces",
+        data={
+            "competition": competition["name"],
+            "club": club["name"],
+            "places": "abc",  # Invalid number
+        },
+    )
 
     # Verifications
-    assert response.status_code == 400
+    assert response.status_code == 200
+    assert b"Please enter a valid number for places" in response.data
     # Verify no changes occurred
     assert int(club["points"]) == initial_points
     assert int(competition["numberOfPlaces"]) == initial_places
