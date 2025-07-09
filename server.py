@@ -135,7 +135,13 @@ def purchase_places():
         0
     ]
     club = [c for c in clubs if c["name"] == request.form["club"]][0]
-    places_required = int(request.form["places"])
+
+    # Try to convert places to integer
+    try:
+        places_required = int(request.form["places"])
+    except ValueError:
+        flash("Please enter a valid number for places")
+        return render_template("welcome.html", club=club, competitions=competitions)
 
     # Check if the club has enough points to make the purchase
     if int(club["points"]) < places_required:
