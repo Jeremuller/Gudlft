@@ -8,7 +8,7 @@ import pytest
 from Python_Testing.server import clubs, competitions, app
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def integration_client():
     """
     Flask test client configured for integration tests.
@@ -23,7 +23,7 @@ def integration_client():
         yield client
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def integration_data():
     """
     Test data setup for integration tests.
