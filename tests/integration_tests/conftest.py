@@ -16,7 +16,8 @@ def integration_client():
     """
     # Configure the app for testing
     app.config["TESTING"] = True
-    app.config["WTF_CSRF_ENABLED"] = False  # Disable CSRF for testing
+    # Disable CSRF for testing
+    app.config["WTF_CSRF_ENABLED"] = False
 
     # Provide the test client
     with app.test_client() as client:
