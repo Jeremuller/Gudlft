@@ -378,21 +378,41 @@ def test_booking_missing_data(integration_client):
 
 def test_booking_invalid_data(integration_client):
     """
-    Test booking with invalid data types.
+    Test complete booking flow with invalid data types.
     Verifies:
+    - Successful login
+    - Access to booking page
     - Server properly validates data types
     - Returns specific error for invalid numbers
-    - Prevents any data corruption
+    - Displays error message
+    - Maintains data integrity
+    - User gets back on welcome
     """
-    # Get initial data for verification
-    club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(
-        c for c in competitions if c["name"] == "Integration Competition 1"
+    # Step 1: Login with valid email
+    response = integration_client.post(
+        "/showSummary",
+        data={"email": "club1@test.com"},
+        follow_redirects=True
     )
+    assert response.status_code == 200
+    assert b"Welcome" in response.data
+    assert b"club1@test.com" in response.data
+
+    # Step 2: Get initial data for verification
+    club = next(c for c in clubs if c["name"] == "Integration Club 1")
+    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
-    # Send request with invalid places data
+    # Step 3: Access booking page
+    response = integration_client.get(
+        f"/book/{competition['name']}/{club['name']}",
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    assert b"Places available:" in response.data
+
+    # Step 4: Send request with invalid places data
     response = integration_client.post(
         "/purchasePlaces",
         data={
@@ -400,14 +420,22 @@ def test_booking_invalid_data(integration_client):
             "club": club["name"],
             "places": "abc",  # Invalid number
         },
+        follow_redirects=True
     )
 
-    # Verifications
+    # Step 5: Verifications
     assert response.status_code == 200
     assert b"Please enter a valid number for places" in response.data
+
     # Verify no changes occurred
     assert int(club["points"]) == initial_points
     assert int(competition["numberOfPlaces"]) == initial_places
+
+    # Verify no booking was tracked
+    key = (club["name"], competition["name"])
+    assert booked_places.get(key, 0) == 0
+    # Check user is properly on welcome page
+    assert b"Welcome, club1@test.com" in response.data
 
 
 def test_booking_tracking(integration_client):
