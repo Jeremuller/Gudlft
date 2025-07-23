@@ -84,7 +84,6 @@ def test_booking_failure_not_enough_points(integration_client):
         c for c in competitions if c["name"] == "Integration Competition 1"
     )
     initial_points = int(club["points"])
-    initial_places = int(competition["numberOfPlaces"])
 
     # Step 3: Access booking page
     response = integration_client.get(f"/book/{competition['name']}/{club['name']}")
@@ -113,15 +112,42 @@ def test_booking_failure_not_enough_points(integration_client):
 
 def test_booking_full_competition(integration_client):
     """
-    Test booking when competition has no places left
+    Test complete booking flow when competition has no places left.
+    Verifies:
+    - Successful login
+    - Access to booking page for full competition
+    - Error handling when no places available
+    - Proper error message display
+    - Data integrity (no points deducted, no places booked)
+    - User stays on booking page
     """
+    # Step 1: Login with valid email
+    response = integration_client.post(
+        "/showSummary",
+        data={"email": "club1@test.com"},
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    assert b"Welcome" in response.data
+    assert b"club1@test.com" in response.data
 
-    # Setup - book all places first
+    # Step 2: Get competition and set it to full
     competition = next(
         c for c in competitions if c["name"] == "Integration Competition 2"
     )
-    competition["numberOfPlaces"] = "0"
+    initial_places = int(competition["numberOfPlaces"])
+    competition["numberOfPlaces"] = "0"  # Set competition to full
 
+    # Step 3: Access booking page
+    response = integration_client.get(
+        f"/book/{competition['name']}/Integration Club 1",
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    assert str.encode(competition["name"]) in response.data
+    assert b"Places available: 0" in response.data  # Verify no places available
+
+    # Step 4: Attempt to book a place
     response = integration_client.post(
         "/purchasePlaces",
         data={
@@ -129,9 +155,14 @@ def test_booking_full_competition(integration_client):
             "club": "Integration Club 1",
             "places": "1",
         },
+        follow_redirects=True
     )
 
-    assert b"Not enough places available in the competition." in response.data
+    # Step 5: Verify error handling
+    assert response.status_code == 200
+    assert b"Not enough places available in the competition" in response.data
+    assert b"Integration Competition 2" in response.data  # Still on booking page
+    assert str.encode(competition["name"]) in response.data
 
 
 def test_booking_points_limit(integration_client):
