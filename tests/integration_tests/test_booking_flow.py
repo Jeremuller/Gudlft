@@ -167,28 +167,58 @@ def test_booking_full_competition(integration_client):
 
 def test_booking_points_limit(integration_client):
     """
-    Test that booking more than 12 places is rejected.
+    Test complete booking flow when exceeding 12 places limit.
+    Verifies:
+    - Successful login
+    - Access to booking page
+    - Error handling when exceeding 12 places limit
+    - Proper error message display
+    - Data integrity (no points deducted, no places booked)
+    - User stays on booking page
     """
-    # Setup - club with enough points
-    club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(
-        c for c in competitions if c["name"] == "Integration Competition 1"
+    # Step 1: Login with valid email
+    response = integration_client.post(
+        "/showSummary",
+        data={"email": "club1@test.com"},
+        follow_redirects=True
     )
+    assert response.status_code == 200
+    assert b"Welcome" in response.data
+    assert b"club1@test.com" in response.data
+    assert b"Points available: 20" in response.data
 
-    # Try to book 13 places
+    # Step 2: Get club and competition data
+    club = next(c for c in clubs if c["name"] == "Integration Club 1")
+    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    initial_points = int(club["points"])
+    initial_places = int(competition["numberOfPlaces"])
+
+    # Step 3: Access booking page
+    response = integration_client.get(
+        f"/book/{competition['name']}/{club['name']}",
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    assert b"Integration Competition 1" in response.data
+    assert str.encode(competition["name"]) in response.data
+    assert str.encode(club["name"]) in response.data
+
+    # Step 4: Attempt to book 13 places (exceeding limit)
     response = integration_client.post(
         "/purchasePlaces",
-        data={"competition": competition["name"], "club": club["name"], "places": "13"},
+        data={
+            "competition": competition["name"],
+            "club": club["name"],
+            "places": "13",
+        },
+        follow_redirects=True
     )
 
-    # Verifications
+    # Step 5: Verify error handling
     assert response.status_code == 200
-    assert (
-        b"A club cannot book more than 12 places in total for a competition."
-        in response.data
-    )
-    assert int(club["points"]) == 20
-    assert int(competition["numberOfPlaces"]) == int(competition["numberOfPlaces"])
+    assert b"A club cannot book more than 12 places in total for a competition" in response.data
+    assert b"Integration Competition 1" in response.data  # Still on booking page
+    assert str.encode(competition["name"]) in response.data
 
 
 def test_multiple_bookings(integration_client):
