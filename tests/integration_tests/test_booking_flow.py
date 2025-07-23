@@ -9,12 +9,25 @@ def test_complete_booking_flow(integration_client):
     """
     Test the full booking process from competition selection to confirmation.
     Verifies:
+    - Successful loading with valid email
     - Competition and club data loading
+    - Access to booking page
     - Points verification
     - Places booking
     - Data updates
+    - Success message display
     """
-    # Get initial data
+
+    # Step 1: Login with valid email
+    response = integration_client.post("/showSummary", data={
+        "email": "club1@test.com"  # Club with 20 points
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Welcome" in response.data
+    assert b"club1@test.com" in response.data
+    assert b"Points available:" in response.data
+
+    # Step 2: Get initial data
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
     competition = next(
         c for c in competitions if c["name"] == "Integration Competition 1"
@@ -23,18 +36,18 @@ def test_complete_booking_flow(integration_client):
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
-    # Test booking page access
+    # Step 3: Test booking page access
     response = integration_client.get(f"/book/{competition['name']}/{club['name']}")
     assert response.status_code == 200
     assert b"Places available:" in response.data
 
-    # Test actual booking
+    # Step 4: Test actual booking
     response = integration_client.post(
         "/purchasePlaces",
         data={"competition": competition["name"], "club": club["name"], "places": "5"},
     )
 
-    # Verify results
+    # Step 5: Verify results
     assert response.status_code == 200
     assert int(club["points"]) == initial_points - 5
     assert int(competition["numberOfPlaces"]) == initial_places - 5
