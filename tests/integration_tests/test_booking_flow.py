@@ -321,21 +321,39 @@ def test_multiple_bookings(integration_client):
 
 def test_booking_missing_data(integration_client):
     """
-    Test booking with missing form data.
+    Test complete booking flow with missing form data.
     Verifies:
+    - Successful login
+    - Access to booking page
     - Server properly validates required fields
     - Returns appropriate error status
     - Maintains data integrity
     """
-    # Get initial data for verification
-    club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(
-        c for c in competitions if c["name"] == "Integration Competition 1"
+    # Step 1: Login with valid email
+    response = integration_client.post(
+        "/showSummary",
+        data={"email": "club1@test.com"},
+        follow_redirects=True
     )
+    assert response.status_code == 200
+    assert b"Welcome" in response.data
+    assert b"club1@test.com" in response.data
+
+    # Step 2: Get initial data for verification
+    club = next(c for c in clubs if c["name"] == "Integration Club 1")
+    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
-    # Send request with missing club data
+    # Step 3: Access booking page
+    response = integration_client.get(
+        f"/book/{competition['name']}/{club['name']}",
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    assert b"Places available:" in response.data
+
+    # Step 4: Send request with missing club data
     response = integration_client.post(
         "/purchasePlaces",
         data={
@@ -343,13 +361,19 @@ def test_booking_missing_data(integration_client):
             # Missing club name intentionally
             "places": "5",
         },
+        follow_redirects=True
     )
 
-    # Verifications
+    # Step 5: Verifications
     assert response.status_code == 400  # Bad Request
+
     # Verify no changes occurred
     assert int(club["points"]) == initial_points
     assert int(competition["numberOfPlaces"]) == initial_places
+
+    # Verify no booking was tracked
+    key = (club["name"], competition["name"])
+    assert booked_places.get(key, 0) == 0
 
 
 def test_booking_invalid_data(integration_client):
