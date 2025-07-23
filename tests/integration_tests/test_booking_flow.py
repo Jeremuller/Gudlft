@@ -512,4 +512,29 @@ def test_booking_tracking(integration_client):
     assert booked_places.get(key, 0) == 8  # Verify updated tracking
 
 
+def test_logout_flow(integration_client):
+    """
+    Test complete logout flow.
+    Verifies:
+    - Successful login
+    - Access to protected page
+    - Logout process
+    - Redirection to home
+    """
+    # Step 1: Login
+    response = integration_client.post(
+        "/showSummary",
+        data={"email": "club1@test.com"},
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    assert b"Welcome" in response.data
 
+    # Step 2: Access protected page
+    response = integration_client.get("/book/Integration Competition 1/Integration Club 1")
+    assert response.status_code == 200
+
+    # Step 3: Logout
+    response = integration_client.get("/logout", follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Welcome to the GUDLFT Registration Portal" in response.data
