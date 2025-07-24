@@ -235,9 +235,7 @@ def test_multiple_bookings(integration_client):
     """
     # Step 1: Login with first club
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club1@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club1@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
@@ -246,27 +244,24 @@ def test_multiple_bookings(integration_client):
     # Get initial data
     club1 = next(c for c in clubs if c["name"] == "Integration Club 1")
     club2 = next(c for c in clubs if c["name"] == "Integration Club 2")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
     initial_places = int(competition["numberOfPlaces"])
     initial_points_club1 = int(club1["points"])
     initial_points_club2 = int(club2["points"])
 
     # Step 2: First booking by club1
     response = integration_client.get(
-        f"/book/{competition['name']}/{club1['name']}",
-        follow_redirects=True
+        f"/book/{competition['name']}/{club1['name']}", follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Places available:" in response.data
 
     response = integration_client.post(
         "/purchasePlaces",
-        data={
-            "competition": competition["name"],
-            "club": club1["name"],
-            "places": "5"
-        },
-        follow_redirects=True
+        data={"competition": competition["name"], "club": club1["name"], "places": "5"},
+        follow_redirects=True,
     )
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
@@ -279,9 +274,7 @@ def test_multiple_bookings(integration_client):
 
     # Step 3: Login with second club
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club2@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club2@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
@@ -289,20 +282,15 @@ def test_multiple_bookings(integration_client):
 
     # Step 4: Second booking by club2
     response = integration_client.get(
-        f"/book/{competition['name']}/{club2['name']}",
-        follow_redirects=True
+        f"/book/{competition['name']}/{club2['name']}", follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Places available" in response.data
 
     response = integration_client.post(
         "/purchasePlaces",
-        data={
-            "competition": competition["name"],
-            "club": club2["name"],
-            "places": "3"
-        },
-        follow_redirects=True
+        data={"competition": competition["name"], "club": club2["name"], "places": "3"},
+        follow_redirects=True,
     )
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
@@ -331,9 +319,7 @@ def test_booking_missing_data(integration_client):
     """
     # Step 1: Login with valid email
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club1@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club1@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
@@ -341,14 +327,15 @@ def test_booking_missing_data(integration_client):
 
     # Step 2: Get initial data for verification
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
     # Step 3: Access booking page
     response = integration_client.get(
-        f"/book/{competition['name']}/{club['name']}",
-        follow_redirects=True
+        f"/book/{competition['name']}/{club['name']}", follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Places available:" in response.data
@@ -361,7 +348,7 @@ def test_booking_missing_data(integration_client):
             # Missing club name intentionally
             "places": "5",
         },
-        follow_redirects=True
+        follow_redirects=True,
     )
 
     # Step 5: Verifications
@@ -390,9 +377,7 @@ def test_booking_invalid_data(integration_client):
     """
     # Step 1: Login with valid email
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club1@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club1@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
@@ -400,14 +385,15 @@ def test_booking_invalid_data(integration_client):
 
     # Step 2: Get initial data for verification
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
 
     # Step 3: Access booking page
     response = integration_client.get(
-        f"/book/{competition['name']}/{club['name']}",
-        follow_redirects=True
+        f"/book/{competition['name']}/{club['name']}", follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Places available:" in response.data
@@ -420,7 +406,7 @@ def test_booking_invalid_data(integration_client):
             "club": club["name"],
             "places": "abc",  # Invalid number
         },
-        follow_redirects=True
+        follow_redirects=True,
     )
 
     # Step 5: Verifications
@@ -452,9 +438,7 @@ def test_booking_tracking(integration_client):
     """
     # Step 1: Login with valid email
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club1@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club1@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
@@ -462,26 +446,23 @@ def test_booking_tracking(integration_client):
 
     # Step 2: Get initial data
     club = next(c for c in clubs if c["name"] == "Integration Club 1")
-    competition = next(c for c in competitions if c["name"] == "Integration Competition 1")
+    competition = next(
+        c for c in competitions if c["name"] == "Integration Competition 1"
+    )
     initial_points = int(club["points"])
     initial_places = int(competition["numberOfPlaces"])
     key = (club["name"], competition["name"])
 
     # Step 3: First booking
     response = integration_client.get(
-        f"/book/{competition['name']}/{club['name']}",
-        follow_redirects=True
+        f"/book/{competition['name']}/{club['name']}", follow_redirects=True
     )
     assert response.status_code == 200
 
     response = integration_client.post(
         "/purchasePlaces",
-        data={
-            "competition": competition["name"],
-            "club": club["name"],
-            "places": "5"
-        },
-        follow_redirects=True
+        data={"competition": competition["name"], "club": club["name"], "places": "5"},
+        follow_redirects=True,
     )
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
@@ -491,19 +472,14 @@ def test_booking_tracking(integration_client):
 
     # Step 4: Second booking
     response = integration_client.get(
-        f"/book/{competition['name']}/{club['name']}",
-        follow_redirects=True
+        f"/book/{competition['name']}/{club['name']}", follow_redirects=True
     )
     assert response.status_code == 200
 
     response = integration_client.post(
         "/purchasePlaces",
-        data={
-            "competition": competition["name"],
-            "club": club["name"],
-            "places": "3"
-        },
-        follow_redirects=True
+        data={"competition": competition["name"], "club": club["name"], "places": "3"},
+        follow_redirects=True,
     )
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
@@ -523,15 +499,15 @@ def test_logout_flow(integration_client):
     """
     # Step 1: Login
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club1@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club1@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
 
     # Step 2: Access protected page
-    response = integration_client.get("/book/Integration Competition 1/Integration Club 1")
+    response = integration_client.get(
+        "/book/Integration Competition 1/Integration Club 1"
+    )
     assert response.status_code == 200
 
     # Step 3: Logout
