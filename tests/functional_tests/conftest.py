@@ -3,6 +3,7 @@ Functional tests configuration file.
 This file contains fixtures and configurations specific to functional tests using Selenium.
 """
 
+import json
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -48,8 +49,8 @@ def flask_app():
     Yields the configured app instance.
     """
     # Set testing configuration
-    app.config['TESTING'] = True
-    app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for testing
+    app.config["TESTING"] = True
+    app.config["WTF_CSRF_ENABLED"] = False  # Disable CSRF for testing
 
     # Provide the configured app to tests
     yield app
@@ -77,52 +78,36 @@ def app_context(flask_app):
         yield
 
 
-@pytest.fixture(scope="function", autouse=True)
-def integration_data():
+@pytest.fixture(scope="module")
+def functional_test_data():
     """
-    Test data setup for integration tests.
-    Automatically used by all tests in this directory.
-    Adds realistic test data and ensures clean state before/after tests.
+    Test data setup for functional tests.
+    Loads data from JSON files and ensures clean state before/after tests.
     """
     # Save original data
     original_clubs = clubs.copy()
     original_competitions = competitions.copy()
     original_booked_places = booked_places.copy()
 
-    # Reset test datas
+    # Clear current data
     clubs.clear()
     competitions.clear()
     booked_places.clear()
 
-    # Add integration-specific test data
-    clubs.extend(
-        [
-            {"name": "Integration Club 1", "email": "club1@test.com", "points": "20"},
-            {"name": "Integration Club 2", "email": "club2@test.com", "points": "30"},
-        ]
-    )
+    # Load test data from JSON files
+    with open('tests/functional/test_data/clubs.json') as f:
+        test_clubs = json.load(f)['clubs']
+    with open('tests/functional/test_data/competitions.json') as f:
+        test_competitions = json.load(f)['competitions']
 
-    competitions.extend(
-        [
-            {
-                "name": "Integration Competition 1",
-                "date": "2025-12-01 10:00:00",
-                "numberOfPlaces": "25",
-                "booked_places": 0,
-            },
-            {
-                "name": "Integration Competition 2",
-                "date": "2025-11-15 14:00:00",
-                "numberOfPlaces": "15",
-                "booked_places": 0,
-            },
-        ]
-    )
+    # Add test data
+    clubs.extend(test_clubs)
+    competitions.extend(test_competitions)
 
-    # This is where the test runs
+    # Yield to run tests
     yield
 
-    # Restore original data after tests complete
+    # Restore original data
     clubs.clear()
     clubs.extend(original_clubs)
     competitions.clear()
