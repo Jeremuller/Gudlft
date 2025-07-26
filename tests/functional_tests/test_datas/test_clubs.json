@@ -1,0 +1,14 @@
+{
+  "clubs": [
+    {
+      "name": "Functional Test Club 1",
+      "email": "ftest1@club.com",
+      "points": "20"
+    },
+    {
+      "name": "Functional Test Club 2",
+      "email": "ftest2@club.com",
+      "points": "30"
+    }
+  ]
+}
