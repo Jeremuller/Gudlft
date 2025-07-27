@@ -1,0 +1,14 @@
+{
+    "clubs": [
+        {
+            "name": "Test Club 1",
+            "email": "test1@club.com",
+            "points": "20"
+        },
+        {
+            "name": "Test Club 2",
+            "email": "test2@club.com",
+            "points": "30"
+        }
+    ]
+}
