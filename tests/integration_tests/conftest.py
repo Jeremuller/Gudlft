@@ -5,7 +5,7 @@ This file contains fixtures and configurations specific to integration tests.
 
 import pytest
 
-from Python_Testing.server import clubs, competitions, app, booked_places
+from Gudlft.server import clubs, competitions, app, booked_places
 
 
 @pytest.fixture(scope="function")

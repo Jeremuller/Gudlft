@@ -1,6 +1,6 @@
 import pytest
 
-from Python_Testing.server import clubs, competitions, load_clubs, load_competitions
+from Gudlft.server import clubs, competitions, load_clubs, load_competitions
 
 
 @pytest.fixture

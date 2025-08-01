@@ -1,6 +1,6 @@
 from flask import request, url_for
 
-from Python_Testing.server import app
+from Gudlft.server import app
 import pytest
 
 

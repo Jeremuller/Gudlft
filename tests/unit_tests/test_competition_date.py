@@ -1,7 +1,7 @@
 import pytest
 import datetime
 
-from Python_Testing.server import clubs, app, get_current_date, competitions
+from Gudlft.server import clubs, app, get_current_date, competitions
 
 
 @pytest.fixture

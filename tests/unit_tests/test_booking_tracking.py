@@ -1,6 +1,6 @@
 import pytest
 
-from Python_Testing.server import (
+from Gudlft.server import (
     clubs,
     app,
     competitions,

@@ -2,7 +2,7 @@
 Integration tests for the complete booking flow.
 """
 
-from Python_Testing.server import clubs, competitions, booked_places
+from Gudlft.server import clubs, competitions, booked_places
 
 
 def test_complete_booking_flow(integration_client):
