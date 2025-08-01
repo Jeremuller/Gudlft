@@ -1,6 +1,9 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from Gudlft.server import app
 from threading import Thread
 
@@ -45,14 +48,23 @@ def test_valid_login(driver, create_app):
 
     driver.get("http://localhost:5001/")
 
-    email_field = driver.find_element("css selector", "input[name='email']")
+    # Wait for the email field to be present and interactable
+    email_field = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
+    )
     email_field.clear()
     email_field.send_keys("functional_test@club.co")
 
-    submit_button = driver.find_element("css selector", "button[type='submit']")
+    # Wait for the submit button to be present and interactable
+    submit_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    )
     submit_button.click()
 
-    assert "Welcome, functional_test@club.co" in driver.page_source
+    # Wait for the welcome message to be present
+    assert WebDriverWait(driver, 10).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Welcome, functional_test@club.co")
+    )
 
 def test_invalid_login(driver, create_app):
     """
@@ -67,14 +79,20 @@ def test_invalid_login(driver, create_app):
 
     driver.get("http://localhost:5001/")
 
-    email_field = driver.find_element("css selector", "input[name='email']")
+    email_field = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
+    )
     email_field.clear()
     email_field.send_keys("invalid_email@club.co")
 
-    submit_button = driver.find_element("css selector", "button[type='submit']")
+    submit_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    )
     submit_button.click()
 
-    assert "The email you entered isn't found" in driver.page_source
+    assert WebDriverWait(driver, 10).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "The email you entered isn't found")
+    )
 
 def test_logout(driver, create_app):
     """
@@ -89,16 +107,26 @@ def test_logout(driver, create_app):
 
     driver.get("http://localhost:5001/")
 
-    email_field = driver.find_element("css selector", "input[name='email']")
+    email_field = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
+    )
     email_field.clear()
     email_field.send_keys("functional_test@club.co")
 
-    submit_button = driver.find_element("css selector", "button[type='submit']")
+    submit_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    )
     submit_button.click()
-    assert "Welcome, functional_test@club.co" in driver.page_source
 
+    assert WebDriverWait(driver, 10).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Welcome, functional_test@club.co")
+    )
 
-    logout_link = driver.find_element("link text", "Logout")
+    logout_link = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Logout"))
+    )
     logout_link.click()
 
-    assert "Welcome to the GUDLFT Registration Portal!" in driver.page_source
+    assert WebDriverWait(driver, 10).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Welcome to the GUDLFT Registration Portal!")
+    )
