@@ -1,4 +1,5 @@
 import pytest
+import re
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -66,9 +67,12 @@ def test_display_competitions(driver, create_app):
     assert len(competition_elements) > 0, "No competitions displayed"
 
 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 def test_booking_and_display_update(driver, create_app):
     """
-    Test booking places and verify the display is updated correctly.
+    Test booking places and verify the club points are updated correctly.
     """
     def run_app():
         create_app.run(port=5001)
@@ -77,8 +81,17 @@ def test_booking_and_display_update(driver, create_app):
     app_thread.daemon = True
     app_thread.start()
 
-    # Log in
+    # Navigate to the login page
     driver.get("http://localhost:5001/")
+    print("Page source after login:")
+    print(driver.page_source)
+
+    # Verify initial points of the Functional Test Club
+    assert WebDriverWait(driver, 10).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Functional Test Club - Points: 27")
+    ), "Initial points are not as expected."
+
+    # Log in
     email_field = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
     )
@@ -90,18 +103,14 @@ def test_booking_and_display_update(driver, create_app):
     )
     submit_button.click()
 
-    # Record initial number of places for the first competition
-    competition_elements = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "ul li"))
-    )
-    initial_places_text = competition_elements[0].text.split('Number of Places: ')[1].split('\n')[0]
-    initial_places = int(initial_places_text)
-
-    # Book places for the first competition
+    # Book places for the third competition
     book_links = WebDriverWait(driver, 10).until(
         EC.presence_of_all_elements_located((By.LINK_TEXT, "Book Places"))
     )
-    book_links[0].click()
+    if len(book_links) >= 3:
+        book_links[2].click()  # Select the third link (index 2)
+    else:
+        raise Exception("Not enough 'Book Places' links found.")
 
     places_field = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='places']"))
@@ -114,15 +123,13 @@ def test_booking_and_display_update(driver, create_app):
     )
     book_submit_button.click()
 
-    # Navigate back to the welcome page to verify the updated competition places
-    driver.get("http://localhost:5001/showSummary")
-
-    # Verify the updated number of places for the first competition
-    updated_competition_elements = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, "ul li"))
+    # Logout to return to the login page
+    logout_link = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Logout"))
     )
-    updated_places_text = updated_competition_elements[0].text.split('Number of Places: ')[1].split('\n')[0]
-    updated_places = int(updated_places_text)
+    logout_link.click()
 
-    # Assert that the number of places has been correctly updated
-    assert updated_places == initial_places - 3, "Number of places not updated correctly"
+    # Verify the updated points of the Functional Test Club
+    assert WebDriverWait(driver, 10).until(
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Functional Test Club - Points: 24")
+    ), "Points not updated correctly after booking."
