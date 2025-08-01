@@ -9,7 +9,11 @@
       "name": "Fall Classic",
       "date": "2026-10-22 13:30:00",
       "numberOfPlaces": "13"
+    },
+    {
+      "name": "Functional Test Comp",
+      "date": "2026-04-22 13:30:00",
+      "numberOfPlaces": "20"
     }
-
   ]
 }
