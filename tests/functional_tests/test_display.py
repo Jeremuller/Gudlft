@@ -40,6 +40,7 @@ def test_display_competitions(driver, create_app):
     """
     Test the display of competitions on the welcome page.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -70,10 +71,12 @@ def test_display_competitions(driver, create_app):
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 def test_booking_and_display_update(driver, create_app):
     """
     Test booking places and verify the club points are updated correctly.
     """
+
     def run_app():
         create_app.run(port=5001)
 

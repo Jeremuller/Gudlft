@@ -39,6 +39,7 @@ def test_valid_login(driver, create_app):
     """
     Test login with a valid email.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -66,10 +67,12 @@ def test_valid_login(driver, create_app):
         EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Welcome, functional_test@club.co")
     )
 
+
 def test_invalid_login(driver, create_app):
     """
     Test login with an invalid email.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -94,10 +97,12 @@ def test_invalid_login(driver, create_app):
         EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "The email you entered isn't found")
     )
 
+
 def test_logout(driver, create_app):
     """
     Test logout functionality.
     """
+
     def run_app():
         create_app.run(port=5001)
 

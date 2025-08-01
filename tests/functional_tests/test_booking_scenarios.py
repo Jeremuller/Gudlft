@@ -39,6 +39,7 @@ def test_successful_booking(driver, create_app):
     """
     Test a successful booking of competition places.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -88,6 +89,7 @@ def test_invalid_data_booking(driver, create_app):
     """
     Test booking with invalid data.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -137,6 +139,7 @@ def test_insufficient_points_booking(driver, create_app):
     """
     Test booking with insufficient points.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -178,7 +181,8 @@ def test_insufficient_points_booking(driver, create_app):
     book_submit_button.click()
 
     assert WebDriverWait(driver, 10).until(
-        EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Not enough points to book the required number of places.")
+        EC.text_to_be_present_in_element((By.TAG_NAME, "body"),
+                                         "Not enough points to book the required number of places.")
     )
 
 
@@ -186,6 +190,7 @@ def test_limit_places_booking(driver, create_app):
     """
     Test booking with insufficient competition places.
     """
+
     def run_app():
         create_app.run(port=5001)
 
@@ -232,6 +237,7 @@ def test_limit_places_booking(driver, create_app):
                                          "A club cannot book more than 12 places in total for a competition.")
     )
     assert flash_message
+
 
 def test_insufficient_places_booking(driver, create_app):
     """
