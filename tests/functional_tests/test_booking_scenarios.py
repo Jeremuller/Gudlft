@@ -171,3 +171,52 @@ def test_insufficient_points_booking(driver, create_app):
     assert WebDriverWait(driver, 10).until(
         EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "Not enough points to book the required number of places.")
     )
+
+
+def test_limit_places_booking(driver, create_app):
+    """
+    Test booking with insufficient competition places.
+    """
+    def run_app():
+        create_app.run(port=5001)
+
+    app_thread = Thread(target=run_app)
+    app_thread.daemon = True
+    app_thread.start()
+
+    # Log in
+    driver.get("http://localhost:5001/")
+    email_field = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
+    )
+    email_field.clear()
+    email_field.send_keys("functional_test@club.co")
+
+    submit_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    )
+    submit_button.click()
+
+    # Attempt to book places with insufficient competition places
+    book_link = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Book Places"))
+    )
+    book_link.click()
+
+    places_field = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='places']"))
+    )
+    places_field.clear()
+    places_field.send_keys("15")  # Assuming there aren't this many places available
+
+    book_submit_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    )
+    book_submit_button.click()
+
+    # Wait for the flash message to be present in the DOM
+    flash_message = WebDriverWait(driver, 20).until(
+        EC.text_to_be_present_in_element((By.CSS_SELECTOR, ".flash-messages"),
+                                         "A club cannot book more than 12 places in total for a competition.")
+    )
+    assert flash_message
