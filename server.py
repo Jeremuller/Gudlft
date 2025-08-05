@@ -21,7 +21,6 @@ app.secret_key = "something_special"
 competitions = load_competitions()
 clubs = load_clubs()
 
-
 # Dictionary to keep track of booked places
 booked_places = {}
 
@@ -71,7 +70,7 @@ def show_summary():
             comp
             for comp in competitions
             if datetime.datetime.strptime(comp["date"], "%Y-%m-%d %H:%M:%S").date()
-            >= datetime.datetime.now().date()
+               >= datetime.datetime.now().date()
         ]
 
         # Add booked_places information to each competition
@@ -163,7 +162,7 @@ def purchase_places():
     else:
         # Update the number of places and points
         competition["numberOfPlaces"] = (
-            int(competition["numberOfPlaces"]) - places_required
+                int(competition["numberOfPlaces"]) - places_required
         )
         club["points"] = int(club["points"]) - int(request.form["places"])
 
@@ -182,6 +181,7 @@ def logout():
     Render the index page with club information again.
     """
     return redirect(url_for("index"))
+
 
 # Added a shortcut for easier server launches
 if __name__ == "__main__":

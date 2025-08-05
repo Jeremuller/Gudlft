@@ -1,5 +1,6 @@
 from locust import HttpUser, task, between
 
+
 class WebsiteUser(HttpUser):
     """
     User class for simulating user behavior on the website.

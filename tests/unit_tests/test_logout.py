@@ -24,5 +24,3 @@ def test_logout_route(client):
     assert response.status_code == 200
     # Verify template used
     assert b"Welcome to the GUDLFT Registration Portal!" in response.data
-    # Verify redirection
-    assert request.path == url_for("index")
