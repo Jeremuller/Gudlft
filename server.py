@@ -178,4 +178,11 @@ def purchase_places():
 
 @app.route("/logout")
 def logout():
+    """
+    Render the index page with club information again.
+    """
     return redirect(url_for("index"))
+
+# Added a shortcut for easier server launches
+if __name__ == "__main__":
+    app.run()
