@@ -8,7 +8,6 @@ class WebsiteUser(HttpUser):
     """
     wait_time = between(1, 5)  # Wait time between tasks
 
-
     @task(1)
     def login(self):
         """
