@@ -8,11 +8,6 @@ class WebsiteUser(HttpUser):
     """
     wait_time = between(1, 5)  # Wait time between tasks
 
-    def on_start(self):
-        """
-        Called when a user starts before any task is scheduled.
-        """
-        pass
 
     @task(1)
     def login(self):
