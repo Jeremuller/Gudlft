@@ -172,7 +172,12 @@ def purchase_places():
 
         # Display a confirmation message, and render welcome template
         flash("Great-booking complete!")
-        return render_template("welcome.html", club=club, competitions=competitions)
+        return render_template(
+            "welcome.html",
+            club=club,
+            competitions=competitions,
+            booked_places=booked_places
+        )
 
 
 @app.route("/logout")

@@ -1,3 +1,6 @@
+from Gudlft.server import clubs, competitions, booked_places
+
+
 def test_integration_purchase_places_update(integration_client):
     """
     Test the immediate update of data after a purchase in the user interface.
@@ -14,9 +17,7 @@ def test_integration_purchase_places_update(integration_client):
     """
     # Simulate login by accessing the showSummary route
     response = integration_client.post(
-        "/showSummary",
-        data={"email": "club1@test.com"},
-        follow_redirects=True
+        "/showSummary", data={"email": "club1@test.com"}, follow_redirects=True
     )
     assert response.status_code == 200
     assert b"Welcome" in response.data
@@ -27,14 +28,17 @@ def test_integration_purchase_places_update(integration_client):
         data={
             "club": "Integration Club 1",
             "competition": "Integration Competition 1",
-            "places": "3"
+            "places": "3",
         },
-        follow_redirects=True
+        follow_redirects=True,
     )
+
+    print("Booked Places:", booked_places)
 
     # Check if the purchase was successful
     assert b"Great-booking complete!" in purchase_response.data
 
     # Check if the points and places are updated correctly in the response
-    assert b"17 points available" in purchase_response.data
-    assert b"22 places available" in purchase_response.data
+    assert b"Points available: 17" in purchase_response.data
+    assert b"Places already booked: 3 / 12" in purchase_response.data
+    assert b"Number of Places: 22" in purchase_response.data
