@@ -33,7 +33,7 @@ def test_integration_purchase_places_update(integration_client):
         follow_redirects=True,
     )
 
-    print("Booked Places:", booked_places)
+    print("Booked Places before rendering:", booked_places)
 
     # Check if the purchase was successful
     assert b"Great-booking complete!" in purchase_response.data

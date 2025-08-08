@@ -170,13 +170,17 @@ def purchase_places():
         key = (club["name"], competition["name"])
         booked_places[key] = booked_places.get(key, 0) + places_required
 
+        competition["booked_places"] = get_booked_places(
+            club["name"], competition["name"]
+        )
+
         # Display a confirmation message, and render welcome template
         flash("Great-booking complete!")
         return render_template(
             "welcome.html",
             club=club,
             competitions=competitions,
-            booked_places=booked_places
+            booked_places=booked_places,
         )
 
 
