@@ -70,7 +70,7 @@ def show_summary():
             comp
             for comp in competitions
             if datetime.datetime.strptime(comp["date"], "%Y-%m-%d %H:%M:%S").date()
-               >= datetime.datetime.now().date()
+            >= datetime.datetime.now().date()
         ]
 
         # Add booked_places information to each competition
@@ -162,7 +162,7 @@ def purchase_places():
     else:
         # Update the number of places and points
         competition["numberOfPlaces"] = (
-                int(competition["numberOfPlaces"]) - places_required
+            int(competition["numberOfPlaces"]) - places_required
         )
         club["points"] = int(club["points"]) - int(request.form["places"])
 
@@ -172,7 +172,7 @@ def purchase_places():
 
         # Display a confirmation message, and render welcome template
         flash("Great-booking complete!")
-    return render_template("welcome.html", club=club, competitions=competitions)
+        return render_template("welcome.html", club=club, competitions=competitions)
 
 
 @app.route("/logout")
